@@ -1,0 +1,74 @@
+<?php
+
+/**
+ * @file
+ * Install and requirements hooks for AI Penpot.
+ *
+ * The wiring logic (Key creation, Canvas AI orchestrator tools, AI Context
+ * seeding) lives in the Drupal\ai_penpot\AiPenpotInstaller service so it is
+ * shared, injectable and testable; these hooks only call it.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Extension\Requirement\RequirementSeverity;
+use Drupal\Core\Url;
+
+/**
+ * Implements hook_install().
+ */
+function ai_penpot_install(): void {
+  // ai_penpot ships the Penpot connection (client + settings + the `penpot`
+  // Key). Provision that Key (the token value is added by the site
+  // administrator), then seed the editable Penpot AI guidance as AI Context
+  // items - a no-op when the ai_context module is not installed.
+  $installer = \Drupal::service('ai_penpot.installer');
+  $installer->installPenpotKey();
+  $installer->seedContextItems();
+}
+
+/**
+ * Implements hook_requirements().
+ */
+function ai_penpot_requirements(string $phase): array {
+  $requirements = [];
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+
+  /** @var \Drupal\ai_penpot\PenpotContextClient $client */
+  $client = \Drupal::service('ai_penpot.client');
+  $token = $client->getToken();
+  $base = $client->getBaseUrl();
+  $settings_url = Url::fromRoute('ai_penpot.settings')->toString();
+
+  if ($base === '') {
+    $requirements['ai_penpot_base'] = [
+      'title' => t('AI Penpot'),
+      'value' => t('No Penpot instance URL configured'),
+      'severity' => RequirementSeverity::Warning,
+      'description' => t('Set the base URL of your Penpot instance at <a href=":url">the settings page</a> so the Penpot design context tool can run.', [
+        ':url' => $settings_url,
+      ]),
+    ];
+  }
+  elseif ($token === '') {
+    $requirements['ai_penpot_token'] = [
+      'title' => t('AI Penpot'),
+      'value' => t('No Penpot token configured'),
+      'severity' => RequirementSeverity::Warning,
+      'description' => t('Pick (or add) a Key holding your Penpot access token at <a href=":url">the settings page</a> so the Penpot design context tool can run.', [
+        ':url' => $settings_url,
+      ]),
+    ];
+  }
+  else {
+    $requirements['ai_penpot_token'] = [
+      'title' => t('AI Penpot'),
+      'value' => t('Penpot connection configured'),
+      'severity' => RequirementSeverity::OK,
+    ];
+  }
+
+  return $requirements;
+}

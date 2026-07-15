@@ -1,0 +1,11 @@
+name: 'AI Penpot'
+type: module
+description: 'Reads live Penpot design context via the Penpot API and exposes it to Drupal AI Agent tools, so the Drupal Canvas AI assistant can build from a real design. Config-driven, theme- and framework-agnostic.'
+package: 'AI'
+core_version_requirement: ^11.2
+dependencies:
+  - ai:ai
+  - ai_agents:ai_agents
+  - key:key
+  - easy_encryption:easy_encryption
+configure: ai_penpot.settings

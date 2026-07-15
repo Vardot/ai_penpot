@@ -1,0 +1,7 @@
+ai_penpot.settings:
+  path: '/admin/config/ai/penpot'
+  defaults:
+    _form: 'Drupal\ai_penpot\Form\SettingsForm'
+    _title: 'AI Penpot'
+  requirements:
+    _permission: 'administer ai penpot'

@@ -1,0 +1,20 @@
+services:
+  ai_penpot.client:
+    class: Drupal\ai_penpot\PenpotContextClient
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@logger.factory'
+      - '@?key.repository'
+
+  ai_penpot.installer:
+    class: Drupal\ai_penpot\AiPenpotInstaller
+    arguments:
+      - '@config.factory'
+      - '@entity_type.manager'
+      - '@logger.factory'
+      - '@module_handler'
+      - '@plugin.manager.key.key_provider'
+
+  # Alias the class to the service id so the OOP #[Hook] class can autowire it.
+  Drupal\ai_penpot\AiPenpotInstaller: '@ai_penpot.installer'

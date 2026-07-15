@@ -1,0 +1,23 @@
+{
+  "css": {
+    "ai penpot settings form": "form#ai-penpot-settings, form[data-drupal-selector='ai-penpot-settings']",
+    "ai penpot settings base url": "#edit-penpot-base-url, input[name='penpot_base_url']",
+    "ai penpot settings token key": "#edit-penpot-token-key, select[name='penpot_token_key']",
+    "ai penpot settings default file id": "#edit-default-file-id, input[name='default_file_id']",
+    "ai penpot settings connection details": "details#edit-connection",
+    "ai penpot settings test details": "details#edit-test",
+    "ai penpot test connection button": "#edit-test-connection, input[value='Test Penpot connection']",
+    "ai penpot save configuration button": "#edit-submit, input[value='Save configuration']",
+    "ai penpot settings form errors": "form#ai-penpot-settings [aria-invalid='true'], form[data-drupal-selector='ai-penpot-settings'] [aria-invalid='true']",
+
+    "ai penpot admin services link": ".admin-item__link[href$='/admin/config/ai/penpot']",
+    "ai penpot admin menu link": ".admin-item__link[href$='/admin/config/ai/penpot']",
+
+    "ai tools explorer select": "#edit-tool, select[name='tool']",
+    "ai penpot tools explorer list pages option": "#edit-tool option[value='ai_penpot:list_design_pages']",
+    "ai penpot tools explorer design context option": "#edit-tool option[value='ai_penpot:design_context']"
+  },
+  "xpath": {
+    "ai penpot admin services link": "//a[contains(@href,'/admin/config/ai/penpot')]"
+  }
+}

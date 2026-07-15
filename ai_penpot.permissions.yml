@@ -1,0 +1,8 @@
+administer ai penpot:
+  title: 'Administer AI Penpot'
+  description: 'Configure the module settings and the Penpot token.'
+  restrict access: true
+
+use ai penpot design context:
+  title: 'Use Penpot design context'
+  description: 'Read Penpot design context and list page ids (the AI tools and the page list).'
