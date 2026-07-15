@@ -289,6 +289,84 @@ config-driven and theme/framework-agnostic.
 
 ---
 
+## Penpot tools & ecosystem
+
+Useful official projects from the [Penpot org](https://github.com/orgs/penpot/repositories) around a
+Penpot + Drupal + AI workflow:
+
+| Project | What it is / why it helps |
+|---|---|
+| [penpot](https://github.com/penpot/penpot) | The platform itself (Clojure) — the source you self-host. |
+| [penpot-mcp](https://github.com/penpot/penpot-mcp) | The **official MCP server** used in section 3 (`@penpot/mcp`). |
+| [penpot-export](https://github.com/penpot/penpot-export) | ⭐ Devtool that exports a Penpot file's **design tokens → CSS / SCSS / JSON** (W3C Design Tokens spec). Same auth as this module (access token + instance URL + file id). Turn the Penpot colours/typography the AI reads into real theme CSS custom properties. |
+| [penpot-exporter-figma-plugin](https://github.com/penpot/penpot-exporter-figma-plugin) | Figma → Penpot migration — see [Figma to Penpot](figma-to-penpot.md). |
+| [penpot-plugin-starter-template](https://github.com/penpot/penpot-plugin-starter-template) · [penpot-plugins-samples](https://github.com/penpot/penpot-plugins-samples) | Build custom Penpot plugins against the Plugin API (the MCP is one such plugin). |
+| [penpotqa](https://github.com/penpot/penpotqa) | ⭐ Penpot's official **Playwright** QA suite (500+ tests) — the reference for driving the Penpot editor with Playwright. |
+| [penpot-helm](https://github.com/penpot/penpot-helm) | Helm charts to self-host Penpot on Kubernetes — an alternative to the DDEV setup in section 1. |
+| [penpot-admin](https://github.com/penpot/penpot-admin) | Django admin interface for a self-hosted instance. |
+| [penpot-files](https://github.com/penpot/penpot-files) | Publicly released Penpot files/assets — handy sample designs to test the tools against. |
+| [penpot-ai-kit](https://github.com/penpot/penpot-ai-kit) | ⭐ Penpot's official **AI kit** — skills, workflows and agent policies that let an AI assistant work inside a Penpot file over the MCP (see below). |
+| [penai](https://github.com/penpot/penai) | Penpot's applied-AI research. |
+
+### penpot-export — design tokens to CSS
+
+A natural pairing with AI Penpot: while this module lets the Canvas AI *read* a design, `penpot-export`
+turns that design's tokens into build-time CSS/SCSS/JSON your theme can consume.
+
+```bash
+npm install @penpot-export/cli --save-dev
+penpot-export inspect <PENPOT FILE URL>     # prints the file id
+# declare file id → output paths/formats in penpot-export.config.js, then:
+penpot-export
+```
+
+It reads colours, typography and page components; auth is a **Penpot access token** + **instance URL**
+(defaults to `https://design.penpot.app`) + **file id** — the same three values this module uses.
+
+### penpotqa — Playwright reference for Penpot
+
+If you automate Penpot itself with a browser — the Penpot MCP plugin bridge (section 3), a design
+agent driving the editor, or a webship-js/Playwright suite — Penpot's own
+[penpotqa](https://github.com/penpot/penpotqa) is the best reference. It is a Playwright suite of 500+
+tests over login, dashboard and the workspace/editor.
+
+```bash
+nvm use && npm install && npx playwright install
+# .env: BASE_URL (e.g. https://penpot.ddev.site/), LOGIN_EMAIL, LOGIN_PWD
+npm test                                          # all tests, Chrome
+npx playwright test tests/login.spec.js --project=chrome
+npm run test:docker                               # containerised, no local Node/browser
+```
+
+Patterns worth borrowing: spec-per-feature layout, `.env`-driven `BASE_URL`/credentials, parallel
+workers, and `toHaveScreenshot()` with element **masking** + a small pixel tolerance to keep editor
+screenshots stable. (This module's own functional suite uses webship-js — Playwright + Cucumber — which
+follows the same web-first, auto-waiting Playwright model.)
+
+### penpot-ai-kit — AI skills for driving Penpot
+
+[penpot-ai-kit](https://github.com/penpot/penpot-ai-kit) (CC-BY-4.0) is the design-side counterpart to
+this module: where AI Penpot lets Drupal's AI *read* a design, the AI kit lets an AI assistant *author
+and audit* a Penpot design over the **Penpot MCP** (section 3), with the user in control. It is
+content-only — markdown skills, JSON policies and prompt templates, no build step — and installs into
+`~/.penpot-ai-kit`. Highlights worth reusing when building Penpot design agents:
+
+- **Skills** (focused recipes): `penpot-foundations` (design tokens), `penpot-component-factory`
+  (variant components), `penpot-build-screen` (screen from a brief), `penpot-build-from-code`,
+  `penpot-document-handoff`; audits `penpot-audit-accessibility` (WCAG AA), `penpot-audit-tokens`,
+  `penpot-design-to-code-review`, `penpot-design-md`; housekeeping `penpot-migrate` (Figma→Penpot),
+  `penpot-rename-layers`, and a `penpot-router` dispatcher.
+- **Workflows** chaining skills: `brief-to-screen` (build → audit → fix until accessibility passes),
+  `design-system-bootstrap` (tokens → components → audits), `code-to-penpot-sync`, `figma-migration`,
+  `accessibility-gate`.
+- **Safety modes** per skill — 🔍 Suggest (report only), ✏️ Review (preview + approve), ⚡ Auto-fix
+  (only trivially safe changes like renaming) — plus an `AGENTS.md` house-rules file ("use existing
+  systems, never hardcode, ask before meaningful changes").
+- Uses the same MCP tools as section 3 (`high_level_overview`, `penpot_api_info`, `execute_code`,
+  `export_shape`, `import_image`) and works against a self-hosted instance.
+
+---
+
 ## Reference
 
 | Thing | Value |
